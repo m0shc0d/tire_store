@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tire_shop"
+description = ''
+version = "0.0.1"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "albus.cygnus", email = "albus.cygnus@yandex.ru" },
+]
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+  "fastapi>=0.115.3",
+  "faststream[rabbit]>=0.5.23",
+  "sqlmodel>=0.0.22",
+  "alembic>=1.3.2",
+  "pydantic-settings>=2.5.2",
+  "tenacity>=9.0.0",
+  "pyjwt>=2.9.0",
+  "passlib>=1.7.4",
+  # Pin bcrypt until passlib supports the latest
+  "bcrypt==4.0.1",
+  "psycopg[binary,pool]>=3.2.2",
+  "email-validator<3.0.0.0,>=2.1.0.post1",
+  "emails<1.0,>=0.6",
+  "pytest>=8.3.3",
+  "vakt[redis]>=1.6.0",
+  "httpx>=0.27.2",
+  "Jinja2>=3.1.4",
+  "python-multipart>=0.0.17",
+]
+
+[tool.hatch.envs.dev]
+dependencies = [
+  "fastapi[standard]>=0.115.3",
+  "faststream[cli]>=0.5.25",
+  "ruff>=0.7.2",
+  "mypy>=1.13.0",
+]
+
+[tool.hatch.envs.dev.scripts]
+server = "fastapi dev app/main.py"
+check = "ruff check app"
+lint = "ruff format app --check"
+prestart = "python -m app.backend_pre_start & alembic upgrade head & python -m app.initial_data "
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.hatch.envs.hatch-test]
+tests = ["app/tests", "*/tests"]
+test_paths = ["app/tests", "*/tests"]
+default-args = ["--exitfirst","--quiet","--log-file-level=INFO","--log-file=pytest.txt","--show-capture=no", "--log-format='%(asctime)s %(levelname)s %(message)s'","--log-date-format='%Y-%m-%d %H:%M:%S'"]
+parallel = true
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.12"]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
