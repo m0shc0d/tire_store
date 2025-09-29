@@ -48,7 +48,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.dev.scripts]
-server = "fastapi dev app/main.py"
+server = "fastapi dev --host 0.0.0.0 app/main.py"
 check = "ruff check app"
 lint = "ruff format app --check"
 prestart = "python -m app.backend_pre_start & alembic upgrade head & python -m app.initial_data "
