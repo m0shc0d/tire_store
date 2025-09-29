@@ -1,5 +1,5 @@
 # Use postgres/example as user/password credentials
-name: cobit_dev
+name: shop_dev
 
 services:
 
@@ -43,6 +43,22 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      custom_net:
+        ipv4_address: 172.16.1.6
+    env_file:
+      - .env
 
 volumes:
   app-db-data:
