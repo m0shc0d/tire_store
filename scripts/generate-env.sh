@@ -30,7 +30,7 @@ gen_pass(){
   openssl rand -hex 16
 }
 
-echo "=== ../.env generator ==="
+echo "=== .env generator ==="
 echo
 
 DOMAIN=$(ask "DOMAIN" "localhost")
