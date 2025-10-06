@@ -1,60 +1,70 @@
-.idea
-.ipynb_checkpoints
-.mypy_cache
-.vscode
-__pycache__
-.pytest_cache
-htmlcov
-dist
-site
-.coverage*
+###############################################################################
+# 1. Python (FastAPI / Alembic / SQLAlchemy)
+###############################################################################
+# Byte-code & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
 coverage.xml
-.netlify
-test.db
-log.txt
-Pipfile.lock
-env3.*
-env
+htmlcov/
+*.cover
+.hypothesis/
+
+# Virtual environments
 .env
-docs_build
-site_build
-.venv
-docs.zip
-archive.zip
-.ruff.cache
+.venv/
+venv/
+env/
+env3.*
 
-# dotenvx encryption keys
-.env.keys
-
-# vim temporary files
-*~
-.*.sw?
-.cache
+# Alembic & DB artefacts
+migrations/versions/*.py        # keep only *.py that you *wrote*
+*.db
+test.db
 
 # Logs
-logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+logs/
 
-node_modules
-dist
-dist-ssr
+###############################################################################
+# 2. Node / Vue / Hey API
+###############################################################################
+node_modules/
+dist/
+dist-ssr/
 *.local
-yarn.lock
-package-lock.json
-openapi.json
 
-# Editor directories and files
+# Lock files (choose ONE per project; ignored here to avoid conflicts)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated OpenAPI clients
+openapi.json
+hey-api-client/                  # default output dir of Hey API generator
+
+###############################################################################
+# 3. IDE & OS
+###############################################################################
 .vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+!.vscode/extensions.json         # share recommended extensions
+.idea/
 *.sw?
+*~
+.DS_Store
+Thumbs.db
+
+###############################################################################
+# 4. Deployment & misc
+###############################################################################
+.netlify/
+site/
+site_build/
+docs_build/
+docs.zip
+archive.zip
