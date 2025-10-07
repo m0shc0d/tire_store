@@ -26,7 +26,7 @@ services:
       - ${POSTGRES_PORT?Variable not set}:${POSTGRES_PORT?Variable not set}
     networks:
       custom_net:
-        ipv4_address: ${POSTGRES_SERVER?Variable not set}
+        ipv4_address: 172.16.1.2
 
   adminer:
     image: adminer
@@ -51,7 +51,7 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      - 8080:8000
+      - 8000:8000
     depends_on:
       - db
     networks:
