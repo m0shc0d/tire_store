@@ -50,8 +50,8 @@ dependencies = [
 [tool.hatch.envs.dev.scripts]
 server = "fastapi dev --host 0.0.0.0 app/main.py"
 check = "ruff check app"
-lint = "ruff format app --check"
-prestart = "python -m app.backend_pre_start & alembic upgrade head & python -m app.initial_data "
+lint = "ruff format app"
+prestart = "python -m app.backend_pre_start && python -m alembic upgrade head && python -m app.initial_data"
 
 [tool.hatch.build.targets.wheel]
 packages = ["backend"]

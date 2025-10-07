@@ -107,7 +107,7 @@ if ask_yes_no "Configure SMTP" "n"; then
   SMTP_PORT=$(ask "SMTP_PORT" "587")
 fi
 
-POSTGRES_SERVER=$(ask "POSTGRES_SERVER" "172.16.1.2")
+POSTGRES_SERVER=$(ask "POSTGRES_SERVER" "localhost")
 POSTGRES_PORT=$(ask "POSTGRES_PORT" "5432")
 POSTGRES_DB=$(ask "POSTGRES_DB" "app")
 

@@ -1,0 +1,3 @@
+# hatch.toml
+[dirs.env.virtual]
+location = ".venv"
