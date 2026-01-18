@@ -14,6 +14,7 @@ coverage.xml
 htmlcov/
 *.cover
 .hypothesis/
+uv.lock
 
 # Virtual environments
 .env
@@ -69,3 +70,4 @@ site_build/
 docs_build/
 docs.zip
 archive.zip
+diagrams/
