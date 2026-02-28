@@ -1,6 +1,6 @@
-import pytest
 import os
-import sys
+
+import pytest
 
 # Устанавливаем ВСЕ обязательные переменные окружения
 # ENVIRONMENT должен быть одним из: local, staging, production
@@ -30,14 +30,17 @@ os.environ.update({
 })
 
 # Теперь импортируем приложение
+from datetime import timedelta
+
 from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+
+from app.core.config import settings
+from app.core.security import create_access_token, get_password_hash
 from app.main import app
 from app.user.models import User
-from app.core.security import get_password_hash, create_access_token
-from app.core.config import settings
-from datetime import timedelta
+
 
 # Создаем движок для тестовой базы данных
 @pytest.fixture(name="engine")

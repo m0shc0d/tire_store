@@ -1,12 +1,10 @@
 # backend/tests/test_users.py
-import uuid
-import json
 
 def test_read_users_as_superuser(superuser_client, test_user, session):
     """Тест получения списка пользователей суперпользователем."""
     # Создаем еще одного пользователя
-    from app.user.models import User
     from app.core.security import get_password_hash
+    from app.user.models import User
 
     user2 = User(
         email="user2@example.com",
@@ -86,8 +84,8 @@ def test_update_user_me_success(authenticated_client, test_user, session):
 def test_update_user_me_duplicate_email(authenticated_client, test_user, session):
     """Тест обновления своего email на уже существующий."""
     # Создаем второго пользователя
-    from app.user.models import User
     from app.core.security import get_password_hash
+    from app.user.models import User
 
     user2 = User(
         email="existing@example.com",
@@ -226,8 +224,8 @@ def test_read_user_by_id_as_superuser(superuser_client, test_user):
 
 def test_read_user_by_id_as_other_user(authenticated_client, session):
     """Тест получения другого пользователя по ID (обычным пользователем)."""
-    from app.user.models import User
     from app.core.security import get_password_hash
+    from app.user.models import User
 
     other_user = User(
         email="other@example.com",
@@ -266,8 +264,8 @@ def test_update_user_as_superuser(superuser_client, test_user, session):
 
 def test_delete_user_as_superuser(superuser_client, session):
     """Тест удаления пользователя суперпользователем."""
-    from app.user.models import User
     from app.core.security import get_password_hash
+    from app.user.models import User
 
     user_to_delete = User(
         email="todelete@example.com",

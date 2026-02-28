@@ -1,5 +1,4 @@
 # backend/tests/test_auth.py
-import json
 
 def test_login_access_token_success(client, test_user):
     """Тест успешного получения токена доступа."""
@@ -28,8 +27,8 @@ def test_login_access_token_wrong_password(client, test_user):
 
 def test_login_access_token_inactive_user(client, session):
     """Тест входа неактивного пользователя."""
-    from app.user.models import User
     from app.core.security import get_password_hash
+    from app.user.models import User
 
     inactive_user = User(
         email="inactive@example.com",

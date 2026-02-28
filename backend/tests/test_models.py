@@ -1,8 +1,14 @@
 # backend/tests/test_models.py
 import uuid
-from app.user.models import User, UserCreate, UserRegister, UserUpdate, UserUpdateMe, UpdatePassword
-from app.auth.models import Token, TokenPayload, NewPassword
+
+from app.auth.models import Token
 from app.models import Message
+from app.user.models import (
+    User,
+    UserCreate,
+    UserRegister,
+)
+
 
 def test_user_model_creation():
     """Тест создания модели пользователя."""
