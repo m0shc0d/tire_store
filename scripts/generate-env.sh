@@ -8,6 +8,8 @@ if [[ -e $OUT_FILE ]]; then
   exit 1
 fi
 
+OUT_FILE_TEST="../.env.test"
+
 ask(){
   local prompt="$1" default="$2"
   read -rp "$prompt [$default]: " val
@@ -27,7 +29,7 @@ ask_yes_no(){
 }
 
 gen_pass(){
-  openssl rand -hex 16
+  LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+-=[]{}|;:,.<>?' < /dev/urandom | head -c 32; echo
 }
 
 echo "=== .env generator ==="
@@ -76,7 +78,7 @@ else
   BACKEND_CORS_ORIGINS="http://${DOMAIN},http://${DOMAIN}:5173,https://${DOMAIN},https://${DOMAIN}:5173,http://localhost.tiangolo.com"
 fi
 
-SECRET_KEY=$(openssl rand -hex 32)
+SECRET_KEY=$(head -c 32 /dev/urandom | base64)
 
 echo "Example FIRST_SUPERUSER: admin@example.com"
 FIRST_SUPERUSER=$(ask "FIRST_SUPERUSER" "admin@example.com")
@@ -107,24 +109,31 @@ if ask_yes_no "Configure SMTP" "n"; then
   SMTP_PORT=$(ask "SMTP_PORT" "587")
 fi
 
-POSTGRES_SERVER=$(ask "POSTGRES_SERVER" "172.16.1.2")
+POSTGRES_SERVER=$(ask "POSTGRES_SERVER" "db")
 POSTGRES_PORT=$(ask "POSTGRES_PORT" "5432")
 POSTGRES_DB=$(ask "POSTGRES_DB" "app")
 
-POSTGRES_USER_DEFAULT=postgres
+POSTGRES_USER_DEFAULT="postgres"
 if ask_yes_no "POSTGRES_USER = ${POSTGRES_USER_DEFAULT}"; then
   POSTGRES_USER=$POSTGRES_USER_DEFAULT
 else
-  echo "Strongly recommended to keep 'postgres' as the superuser."
+  echo "We strongly recommended to keep 'postgres' as the superuser."
   read -rp "Are you sure? (y/n) [n]: " sure
   [[ $sure == "y" ]] && POSTGRES_USER=$(ask "POSTGRES_USER" "$POSTGRES_USER_DEFAULT") || POSTGRES_USER=$POSTGRES_USER_DEFAULT
 fi
 
 if ask_yes_no "Generate POSTGRES_PASSWORD automatically"; then
   POSTGRES_PASSWORD=$(gen_pass)
-  echo "Generated password: $POSTGRES_PASSWORD"
 else
   read -rsp "Enter POSTGRES_PASSWORD: " POSTGRES_PASSWORD; echo
+fi
+
+RABBITMQ_USER=$(ask "RABBITMQ_USER" "admin")
+
+if ask_yes_no "Generate RABBITMQ_PASSWORD automatically"; then
+  RABBITMQ_PASSWORD=$(gen_pass)
+else
+  read -rsp "Enter RABBITMQ_PASSWORD " RABBITMQ_PASSWORD; echo
 fi
 
 SENTRY_DSN=""
@@ -133,6 +142,10 @@ DOCKER_IMAGE_FRONTEND=$(ask "DOCKER_IMAGE_FRONTEND" "frontend")
 HELLO="World"
 
 cat > "$OUT_FILE" <<EOF
+##############################
+### PRODUCTION ENVIRONMENT ###
+##############################
+
 # Domain
 DOMAIN=$DOMAIN
 
@@ -171,6 +184,12 @@ POSTGRES_DB=$POSTGRES_DB
 POSTGRES_USER=$POSTGRES_USER
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
+# RabbitMQ
+RABBITMQ_AMQP_PORT=$(ask "RABBITMQ_AMQP_PORT" "5672")
+RABBITMQ_HTTP_PORT=$(ask "RABBITMQ_HTTP_PORT" "15672")
+RABBITMQ_USER=$RABBITMQ_USER
+RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD
+
 SENTRY_DSN=$SENTRY_DSN
 
 # Configure these with your own Docker registry images
@@ -181,3 +200,46 @@ EOF
 
 echo
 echo "File $OUT_FILE created."
+
+cat > "$OUT_FILE_TEST" <<EOF
+###########################
+### TESTING ENVIRONMENT ###
+###########################
+
+# Backend
+SECRET_KEY_TEST=test-secret-key-not-for-production
+FIRST_SUPERUSER_TEST=test@example.com
+FIRST_SUPERUSER_PASSWORD_TEST=testpassword123
+
+# Emails
+SMTP_HOST_TEST=$SMTP_HOST
+SMTP_USER_TEST=$SMTP_USER
+SMTP_PASSWORD_TEST=$SMTP_PASSWORD
+EMAILS_FROM_EMAIL_TEST=$EMAILS_FROM_EMAIL
+SMTP_TLS_TEST=$SMTP_TLS
+SMTP_SSL_TEST=$SMTP_SSL
+SMTP_PORT_TEST=$SMTP_PORT
+
+# Postgres
+POSTGRES_SERVER_TEST=$POSTGRES_SERVER
+POSTGRES_PORT_TEST=$POSTGRES_PORT
+POSTGRES_DB_TEST=test_app
+POSTGRES_USER_TEST=test_user
+POSTGRES_PASSWORD_TEST=testpassword
+
+# RabbitMQ
+RABBITMQ_AMQP_PORT_TEST=5673
+RABBITMQ_HTTP_PORT_TEST=15673
+RABBITMQ_USER_TEST=test
+RABBITMQ_PASSWORD_TEST=test
+
+SENTRY_DSN=$SENTRY_DSN
+
+# Configure these with your own Docker registry images
+DOCKER_IMAGE_BACKEND=$DOCKER_IMAGE_BACKEND
+DOCKER_IMAGE_FRONTEND=$DOCKER_IMAGE_FRONTEND
+HELLO=$HELLO
+EOF
+
+echo
+echo "File $OUT_FILE_TEST created."
