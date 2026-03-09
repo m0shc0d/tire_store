@@ -4,7 +4,6 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import col, delete, func, select  # noqa: F401
 
-from app.user import crud
 from app.api.deps import (
     CurrentUser,
     SessionDep,
@@ -13,6 +12,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.models import Message
+from app.user import crud
 from app.user.models import (
     UpdatePassword,
     User,

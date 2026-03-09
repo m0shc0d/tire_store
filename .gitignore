@@ -21,7 +21,7 @@ uv.lock
 .venv/
 venv/
 env/
-env3.*
+.env.*
 
 # Alembic & DB artefacts
 migrations/versions/*.py        # keep only *.py that you *wrote*

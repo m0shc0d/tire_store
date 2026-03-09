@@ -1,0 +1,20 @@
+repos:
+  # Backend: Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.15.5
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+      # Run the formatter.
+      - id: ruff-format
+
+  # Backend: Pytest
+  - repo: local
+    hooks:
+      - id: pytest-backend
+        name: pytest
+        entry: pytest backend
+        language: system
+        pass_filenames: false
+        always_run: true

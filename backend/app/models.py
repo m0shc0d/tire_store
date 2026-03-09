@@ -1,17 +1,18 @@
 # ruff: noqa: F401
 from sqlmodel import SQLModel
+
+from app.auth.models import NewPassword, Token, TokenPayload
 from app.user.models import (
-    UserBase,
-    UserCreate,
-    UserRegister,
-    UserUpdate,
-    UserUpdateMe,
     UpdatePassword,
     User,
+    UserBase,
+    UserCreate,
     UserPublic,
+    UserRegister,
     UsersPublic,
+    UserUpdate,
+    UserUpdateMe,
 )
-from app.auth.models import Token, TokenPayload, NewPassword
 
 
 # Generic message
