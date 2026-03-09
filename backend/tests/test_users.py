@@ -1,5 +1,6 @@
 # backend/tests/test_users.py
 
+
 def test_read_users_as_superuser(superuser_client, test_user, session):
     """Тест получения списка пользователей суперпользователем."""
     # Создаем еще одного пользователя
@@ -25,10 +26,12 @@ def test_read_users_as_superuser(superuser_client, test_user, session):
     assert data["count"] >= 2
     assert any(user["email"] == test_user.email for user in data["data"])
 
+
 def test_read_users_as_regular_user(authenticated_client):
     """Тест попытки получения списка пользователей обычным пользователем."""
     response = authenticated_client.get("/api/v1/users/")
     assert response.status_code == 403  # Forbidden
+
 
 def test_create_user_as_superuser(superuser_client):
     """Тест создания пользователя суперпользователем."""
@@ -37,7 +40,7 @@ def test_create_user_as_superuser(superuser_client):
         "password": "StrongPass123!",
         "full_name": "New User",
         "is_active": True,
-        "is_superuser": False
+        "is_superuser": False,
     }
 
     response = superuser_client.post("/api/v1/users/", json=user_data)
@@ -50,24 +53,23 @@ def test_create_user_as_superuser(superuser_client):
     assert data["is_active"] == user_data["is_active"]
     assert data["is_superuser"] == user_data["is_superuser"]
 
+
 def test_create_user_duplicate_email(superuser_client, test_user):
     """Тест создания пользователя с существующим email."""
     user_data = {
         "email": test_user.email,  # Дублирующий email
         "password": "password",
-        "full_name": "Duplicate User"
+        "full_name": "Duplicate User",
     }
 
     response = superuser_client.post("/api/v1/users/", json=user_data)
     assert response.status_code == 400
     assert "already exists" in response.json()["detail"]
 
+
 def test_update_user_me_success(authenticated_client, test_user, session):
     """Тест успешного обновления своего профиля."""
-    update_data = {
-        "full_name": "Updated Full Name",
-        "email": "updated@example.com"
-    }
+    update_data = {"full_name": "Updated Full Name", "email": "updated@example.com"}
 
     response = authenticated_client.patch("/api/v1/users/me", json=update_data)
     assert response.status_code == 200
@@ -80,6 +82,7 @@ def test_update_user_me_success(authenticated_client, test_user, session):
     session.refresh(test_user)
     assert test_user.full_name == update_data["full_name"]
     assert test_user.email == update_data["email"]
+
 
 def test_update_user_me_duplicate_email(authenticated_client, test_user, session):
     """Тест обновления своего email на уже существующий."""
@@ -103,49 +106,55 @@ def test_update_user_me_duplicate_email(authenticated_client, test_user, session
     assert response.status_code == 409
     assert "already exists" in response.json()["detail"]
 
+
 def test_update_password_me_success(authenticated_client, test_user):
     """Тест успешного обновления своего пароля."""
     password_data = {
         "current_password": "testpassword",
-        "new_password": "NewStrongPass123!"
+        "new_password": "NewStrongPass123!",
     }
 
-    response = authenticated_client.patch("/api/v1/users/me/password", json=password_data)
+    response = authenticated_client.patch(
+        "/api/v1/users/me/password", json=password_data
+    )
     assert response.status_code == 200
     assert response.json()["message"] == "Password updated successfully"
 
     # Проверяем, что можно войти с новым паролем
-    login_data = {
-        "username": test_user.email,
-        "password": "NewStrongPass123!"
-    }
+    login_data = {"username": test_user.email, "password": "NewStrongPass123!"}
     login_response = authenticated_client.post(
-        "/api/v1/auth/login/access-token",
-        data=login_data
+        "/api/v1/auth/login/access-token", data=login_data
     )
     assert login_response.status_code == 200
+
 
 def test_update_password_wrong_current(authenticated_client):
     """Тест обновления пароля с неправильным текущим паролем."""
     password_data = {
         "current_password": "wrongpassword",
-        "new_password": "NewStrongPass123!"
+        "new_password": "NewStrongPass123!",
     }
 
-    response = authenticated_client.patch("/api/v1/users/me/password", json=password_data)
+    response = authenticated_client.patch(
+        "/api/v1/users/me/password", json=password_data
+    )
     assert response.status_code == 400
     assert response.json()["detail"] == "Incorrect password"
+
 
 def test_update_password_same_password(authenticated_client):
     """Тест обновления пароля на тот же самый."""
     password_data = {
         "current_password": "testpassword",
-        "new_password": "testpassword"  # Тот же пароль
+        "new_password": "testpassword",  # Тот же пароль
     }
 
-    response = authenticated_client.patch("/api/v1/users/me/password", json=password_data)
+    response = authenticated_client.patch(
+        "/api/v1/users/me/password", json=password_data
+    )
     assert response.status_code == 400
     assert "cannot be the same" in response.json()["detail"]
+
 
 def test_read_user_me(authenticated_client, test_user):
     """Тест получения информации о текущем пользователе."""
@@ -157,6 +166,7 @@ def test_read_user_me(authenticated_client, test_user):
     assert data["full_name"] == test_user.full_name
     assert "id" in data
 
+
 def test_delete_user_me_success(authenticated_client, test_user, session):
     """Тест успешного удаления своего аккаунта."""
     response = authenticated_client.delete("/api/v1/users/me")
@@ -165,8 +175,10 @@ def test_delete_user_me_success(authenticated_client, test_user, session):
 
     # Проверяем, что пользователь удален из БД
     from app.user.crud import get_user_by_email
+
     db_user = get_user_by_email(session=session, email=test_user.email)
     assert db_user is None
+
 
 def test_delete_user_me_superuser(superuser_client):
     """Тест попытки удаления своего аккаунта суперпользователем."""
@@ -174,12 +186,13 @@ def test_delete_user_me_superuser(superuser_client):
     assert response.status_code == 403
     assert "not allowed to delete themselves" in response.json()["detail"]
 
+
 def test_register_user_success(client, session):
     """Тест успешной регистрации нового пользователя."""
     user_data = {
         "email": "newuser@example.com",
         "password": "StrongPass123!",
-        "full_name": "New User"
+        "full_name": "New User",
     }
 
     response = client.post("/api/v1/users/signup", json=user_data)
@@ -191,21 +204,24 @@ def test_register_user_success(client, session):
 
     # Проверяем создание в БД
     from app.user.crud import get_user_by_email
+
     db_user = get_user_by_email(session=session, email=user_data["email"])
     assert db_user is not None
     assert db_user.email == user_data["email"]
+
 
 def test_register_user_duplicate_email(client, test_user):
     """Тест регистрации с существующим email."""
     user_data = {
         "email": test_user.email,
         "password": "StrongPass123!",
-        "full_name": "Duplicate User"
+        "full_name": "Duplicate User",
     }
 
     response = client.post("/api/v1/users/signup", json=user_data)
     assert response.status_code == 400
     assert "already exists" in response.json()["detail"]
+
 
 def test_read_user_by_id_as_self(authenticated_client, test_user):
     """Тест получения пользователя по ID (самим собой)."""
@@ -216,11 +232,13 @@ def test_read_user_by_id_as_self(authenticated_client, test_user):
     assert data["id"] == str(test_user.id)
     assert data["email"] == test_user.email
 
+
 def test_read_user_by_id_as_superuser(superuser_client, test_user):
     """Тест получения пользователя по ID (суперпользователем)."""
     response = superuser_client.get(f"/api/v1/users/{test_user.id}")
     assert response.status_code == 200
     assert response.json()["id"] == str(test_user.id)
+
 
 def test_read_user_by_id_as_other_user(authenticated_client, session):
     """Тест получения другого пользователя по ID (обычным пользователем)."""
@@ -240,17 +258,15 @@ def test_read_user_by_id_as_other_user(authenticated_client, session):
     response = authenticated_client.get(f"/api/v1/users/{other_user.id}")
     assert response.status_code == 403  # Forbidden
 
+
 def test_update_user_as_superuser(superuser_client, test_user, session):
     """Тест обновления пользователя суперпользователем."""
     update_data = {
         "full_name": "Updated by Admin",
-        "email": "updated_by_admin@example.com"
+        "email": "updated_by_admin@example.com",
     }
 
-    response = superuser_client.patch(
-        f"/api/v1/users/{test_user.id}",
-        json=update_data
-    )
+    response = superuser_client.patch(f"/api/v1/users/{test_user.id}", json=update_data)
     assert response.status_code == 200
 
     data = response.json()
@@ -261,6 +277,7 @@ def test_update_user_as_superuser(superuser_client, test_user, session):
     session.refresh(test_user)
     assert test_user.full_name == update_data["full_name"]
     assert test_user.email == update_data["email"]
+
 
 def test_delete_user_as_superuser(superuser_client, session):
     """Тест удаления пользователя суперпользователем."""

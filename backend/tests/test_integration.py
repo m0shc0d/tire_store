@@ -5,7 +5,7 @@ def test_full_auth_flow(client, session):
     register_data = {
         "email": "integration@example.com",
         "password": "IntegrationPass123!",
-        "full_name": "Integration User"
+        "full_name": "Integration User",
     }
 
     register_response = client.post("/api/v1/users/signup", json=register_data)
@@ -14,7 +14,7 @@ def test_full_auth_flow(client, session):
     # 2. Вход в систему
     login_data = {
         "username": register_data["email"],
-        "password": register_data["password"]
+        "password": register_data["password"],
     }
 
     login_response = client.post("/api/v1/auth/login/access-token", data=login_data)
@@ -30,7 +30,7 @@ def test_full_auth_flow(client, session):
     # 4. Обновление профиля
     update_data = {
         "full_name": "Updated Integration User",
-        "email": "updated_integration@example.com"
+        "email": "updated_integration@example.com",
     }
 
     update_response = client.patch("/api/v1/users/me", json=update_data)
@@ -39,7 +39,7 @@ def test_full_auth_flow(client, session):
     # 5. Обновление пароля
     password_data = {
         "current_password": register_data["password"],
-        "new_password": "NewIntegrationPass456!"
+        "new_password": "NewIntegrationPass456!",
     }
 
     password_response = client.patch("/api/v1/users/me/password", json=password_data)
@@ -48,10 +48,12 @@ def test_full_auth_flow(client, session):
     # 6. Проверка нового пароля
     new_login_data = {
         "username": update_data["email"],
-        "password": password_data["new_password"]
+        "password": password_data["new_password"],
     }
 
-    new_login_response = client.post("/api/v1/auth/login/access-token", data=new_login_data)
+    new_login_response = client.post(
+        "/api/v1/auth/login/access-token", data=new_login_data
+    )
     assert new_login_response.status_code == 200
 
     # 7. Удаление аккаунта

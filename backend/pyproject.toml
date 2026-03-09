@@ -38,6 +38,7 @@ dev = [
     "pytest-mock>=3.14.0",
     "pytest>=9.0.2",
     "httpx>=0.28.1",
+    "pre-commit>=4.5.1",
 ]
 
 [project.scripts]
@@ -53,7 +54,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]
 addopts = ["-vv", "--import-mode=importlib"]
-pythonpath = ["."]
+pythonpath = [".", "backend"]
 
 [tool.ruff]
 target-version = "py312"

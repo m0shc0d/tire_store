@@ -5,6 +5,7 @@ def test_health_check(client):
     assert response.status_code == 200
     assert response.json() is True
 
+
 def test_test_email_as_superuser(superuser_client, mock_send_email_utils):
     """Тест отправки тестового email суперпользователем."""
     email_to = "test@example.com"
@@ -15,7 +16,10 @@ def test_test_email_as_superuser(superuser_client, mock_send_email_utils):
     assert response.json()["message"] == "Test email sent"
     assert mock_send_email_utils.called
 
+
 def test_test_email_as_regular_user(authenticated_client):
     """Тест отправки тестового email обычным пользователем."""
-    response = authenticated_client.post("/api/v1/utils/test-email/?email_to=test@example.com")
+    response = authenticated_client.post(
+        "/api/v1/utils/test-email/?email_to=test@example.com"
+    )
     assert response.status_code == 403  # Forbidden
